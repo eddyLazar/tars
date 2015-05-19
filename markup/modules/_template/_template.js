@@ -1,19 +1,70 @@
-// es 6 sandbox
+// // es 6 sandbox
+// //
 //
-// class Person {
-//     constructor() {
+// let {
+//     Model, View, Collection, Router, LocalStorage
+// } = Backbone;
 //
+// class Person extends Model {
+//     constructor(options) {
+//         super(options);
 //     }
-//     set name(name){
-//         this.first_name = name;
+//
+//     defaults() {
+//             return {
+//                 title: 'title',
+//                 completed: false
+//             };
+//         }
+//         // constructor() {
+//         //
+//         // }
+//     set name(name) {
+//         this.set('name', name)
 //     }
-//     get name(){
-//         return `Hello ${this.first_name}, how are you?`
+//     get name() {
+//             return this.get('name')
+//         }
+//         // get name(){
+//         //     return `Hello ${this.first_name}, how are you?`
+//         // }
+// }
+// class SugarView extends View {
+//     constructor(options) {
+//         super(options);
 //     }
 // }
 //
-// let p = new Person();
+// class AppView extends View {
+//     constructor(options) {
+//         _.defaults(options, {
+//             // These options are assigned to the instance by Backbone
+//             el: 'body',
+//             // className: 'document-row',
+//             // events: {
+//             //     "click .icon": "open",
+//             // },
+//         });
+//         super(options);
+//     }
 //
-// p.name = 'eddy';
+//     render(text) {
+//         this.$el.text(text);
+//     }
 //
-// console.log(p.name);
+//     toggleColor(color="white") {
+//         this.$el.css('background',color);
+//
+//     }
+// }
+//
+//
+//
+// // p.name = 'eddy';
+// let m = new Person();
+// let v = new AppView({
+//     model: m
+// });
+// // m.set('name', 'eddy')
+// m.name = 'eddy boy';
+// console.log(m.name);

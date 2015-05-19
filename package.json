@@ -45,6 +45,7 @@
     "through2": "0.6.3"
   },
   "devDependencies": {
+    "gulp-traceur": "^0.17.1"
   },
   "scripts": {
     "install": "node ./tars/helpers/install-additional-deps.js"
