@@ -31,7 +31,7 @@ var s3 = require('gulp-s3-upload')({
 module.exports = function(buildOptions) {
 
     return gulp.task('upload-s3', /*['required-task-name'],*/ function(cb) {
-        return gulp.src(['./builds/**','!./builds/*.zip'])
+        return gulp.src(['./builds/**'])
             // Do stuff here
             .pipe(s3({
                 Bucket: tarsConfig.s3_default_bucket_name, //  Required

@@ -60,6 +60,7 @@ let tims_json = [{
     ]
 }, ];
 
+let app, filtered_collection;
 
 class Tim extends Model {
     defaults() {
@@ -88,7 +89,7 @@ class Tim extends Model {
     }
 
     get extra() {
-        return this.functions[0].includes('ч');
+        return this.functions[0].indexOf('ч') != -1;
     }
 
     valuable(f) {
@@ -148,15 +149,6 @@ class TimsCollectionView extends View {
             this.$el.append(tv.render());
         });
     }
-
-    renderExtraverts() {
-        this.renderTims(tims.extraverts());
-    }
-
-    renderIntroverts() {
-        this.renderTims(tims.introverts());
-
-    }
 }
 
 class TimView extends View {
@@ -176,30 +168,88 @@ class TimView extends View {
 
 }
 
-
-class Filter {
-    constructor(position){
-        this.tims = tims;
+class FilterView extends View {
+    constructor(options = {}) {
+        _.defaults(options, {
+            // These options are assigned to the instance by Backbone
+            tagName: 'div',
+            className: 'filter'
+                // className: 'document-row',
+        });
+        super(options);
+        this.filter_field = options.filter_field;
     }
+
 }
 
-class functionFilter {
-    constructor(name, funcs, position){
-        this.p = p;
-        this.f = f;
-    }
-}
+// class Filter {
+//     constructor(position){
+//         this.tims = tims;
+//     }
+// }
+//
+// class functionFilter {
+//     constructor(name, funcs, position){
+//         this.p = p;
+//         this.f = f;
+//     }
+// }
 
-filter = {
-    name: '',
-    funcs: [''],
-    position: 123
-}
+// filter = {
+//     name: '',
+//     funcs: [''],
+//     position: 123
+// }
 let tims = new TimCollection();
 
+let extra_filter = function(item) {
+    return item.extra;
+}
 
-let app = new TimsCollectionView({
-    collection: tims
+let filterFunction2 = function(item) {
+    return item.get('group') == 'альфа';
+}
+
+
+function FilteredCollection(original, filterFn) {
+
+    let filtered;
+
+    // Instantiate new collection
+    // console.log(original.constructor());
+    filtered = new original.constructor();
+
+    // Remove events associated with original
+    // filtered._callbacks = {};
+
+    filtered.filterItems = function(filter) {
+        let items;
+        console.log('filter items');
+        console.log(filter);
+        items = original.filter(filter);
+        filtered._currentFilter = filterFn;
+        filtered.reset(items)
+        return filtered;
+    };
+
+    // Refilter when original collection is modified
+    original.on('reset', function() {
+        // console.log('origin changed');
+        filtered.filterItems(filtered._currentFilter);
+    });
+    // console.log(filtered.filterItems(filterFn));
+    return filtered.filterItems(filterFn);
+};
+
+
+
+filtered_collection = FilteredCollection(tims, extra_filter);
+// filtered_collection = FilteredCollection(filtered_collection, filterFunction2);
+
+
+
+app = new TimsCollectionView({
+    collection: filtered_collection
 });
 
 tims.reset(tims_json);
