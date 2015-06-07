@@ -5,12 +5,14 @@ html, body {
 }
 
 .page {
-    
+    padding: 50px;
 }
 
 .page__wrapper {
     min-height: 100%;
     margin-bottom: -50px;
+    width: 800px;
+    margin: 0 auto;
 }
 
 * html .page__wrapper {
@@ -19,4 +21,14 @@ html, body {
 
 .page__buffer {
     height: 50px;
+}
+
+
+.filters {
+    float: left;
+    text-align: center;
+}
+.tims {
+    float: right;
+    text-align: center;
 }

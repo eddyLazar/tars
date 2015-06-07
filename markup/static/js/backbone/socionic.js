@@ -1,5 +1,4 @@
 // калькулятор соционики
-
 let {
     Model, View, Collection, Router
 } = Backbone;
@@ -84,12 +83,21 @@ class Tim extends Model {
         return this.get('title');
     }
 
+    get group() {
+        return this.get('group');
+    }
+
     get functions() {
         return this.get('functions');
     }
 
     get extra() {
-        return this.functions[0].indexOf('ч') != -1;
+        if (this.functions[0].indexOf('ч') != -1){
+            return 'extra';
+        }else{
+            return 'intro';
+        }
+
     }
 
     valuable(f) {
@@ -170,36 +178,57 @@ class TimView extends View {
 
 class FilterView extends View {
     constructor(options = {}) {
+
         _.defaults(options, {
             // These options are assigned to the instance by Backbone
-            tagName: 'div',
-            className: 'filter'
-                // className: 'document-row',
+            tag: 'div',
+            className: 'filter-group',
+            events: {
+                "click .filterValue": "filterCollection"
+            }
+
         });
         super(options);
         this.filter_field = options.filter_field;
+        // this.filter_field = options.filter_field;
+        // this.filter = options.filter;
+    }
+    initialize() {
+        this.listenToOnce(this.collection, "reset", this.render);
+    }
+    render() {
+        let that = this;
+        this.field_possible_values.forEach(field => {
+                that.$el.append(`<a href="#" class="filterValue" data-value='${field}'>${field}</a><br>`);
+            }
+        );
+        $('.filters').append(this.$el);
+        $('.filters').append('<hr>');
+    }
+
+    get field_possible_values() {
+        console.log(_.pluck(this.collection, this.filter_field));
+        return _.uniq(this.collection.pluck(this.filter_field));
+
+    }
+
+    filterCollection(e) {
+        let name = this.filter_field
+        let value = $(e.currentTarget).data('value');
+
+        this.collection.filterItems(function(item) {
+                console.log(item.get(name));
+                console.log(value);
+                return (item[name] == value);
+                // return false;
+            }
+
+        );
     }
 
 }
 
-// class Filter {
-//     constructor(position){
-//         this.tims = tims;
-//     }
-// }
-//
-// class functionFilter {
-//     constructor(name, funcs, position){
-//         this.p = p;
-//         this.f = f;
-//     }
-// }
 
-// filter = {
-//     name: '',
-//     funcs: [''],
-//     position: 123
-// }
 let tims = new TimCollection();
 
 let extra_filter = function(item) {
@@ -216,7 +245,6 @@ function FilteredCollection(original, filterFn) {
     let filtered;
 
     // Instantiate new collection
-    // console.log(original.constructor());
     filtered = new original.constructor();
 
     // Remove events associated with original
@@ -224,8 +252,6 @@ function FilteredCollection(original, filterFn) {
 
     filtered.filterItems = function(filter) {
         let items;
-        console.log('filter items');
-        console.log(filter);
         items = original.filter(filter);
         filtered._currentFilter = filterFn;
         filtered.reset(items)
@@ -234,7 +260,6 @@ function FilteredCollection(original, filterFn) {
 
     // Refilter when original collection is modified
     original.on('reset', function() {
-        // console.log('origin changed');
         filtered.filterItems(filtered._currentFilter);
     });
     // console.log(filtered.filterItems(filterFn));
@@ -243,9 +268,25 @@ function FilteredCollection(original, filterFn) {
 
 
 
-filtered_collection = FilteredCollection(tims, extra_filter);
+// filtered_collection = FilteredCollection(tims, extra_filter);
 // filtered_collection = FilteredCollection(filtered_collection, filterFunction2);
+filtered_collection = FilteredCollection(tims, function() {
+    return true;
+});
+new FilterView({
+    filter_field: 'group',
+    collection: filtered_collection
+})
 
+new FilterView({
+    filter_field: 'title',
+    collection: filtered_collection
+})
+
+new FilterView({
+    filter_field: 'extra',
+    collection: filtered_collection
+})
 
 
 app = new TimsCollectionView({
@@ -253,3 +294,8 @@ app = new TimsCollectionView({
 });
 
 tims.reset(tims_json);
+
+
+// filtered_collection.filterItems(function() {
+//   return false;
+// })
