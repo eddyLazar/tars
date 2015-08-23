@@ -163,6 +163,7 @@ gulp.task('build-dev', function (cb) {
         [
             'css:make-sprite-for-svg', 'css:make-fallback-for-svg', 'css:make-sprite'
         ],
+            'jade:js-templates',
         [
             'css:compile-css', 'css:compile-css-for-ie8',
             'html:concat-modules-data',
